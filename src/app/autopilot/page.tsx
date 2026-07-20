@@ -1,14 +1,24 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    TrendingUp, PlayCircle, CheckCircle2, ArrowRight,
+    TrendingUp, CheckCircle2, ArrowRight,
     Users, Clock, ExternalLink, Sparkles, Lightbulb,
     ChevronDown, ChevronUp, BookOpen, Clipboard, Copy
 } from "lucide-react";
 import { clsx } from "clsx";
 import { InfoHint } from "@/components/ui/InfoHint";
+import { PageHeader } from "@/components/ui/page-header";
+import { GenerationProgress } from "@/components/ui/generation-progress";
+import { VideoThumbnail } from "@/components/ui/video-thumbnail";
+import { VideoOverlay } from "@/components/ui/video-overlay";
+
+const AUTOPILOT_VIDEO_ID = "1171734563";
+
+function randomDelay(minMs: number, maxMs: number) {
+    return minMs + Math.floor(Math.random() * (maxMs - minMs + 1));
+}
 
 const NICHES = [
     "All",
@@ -134,6 +144,15 @@ export default function AutomatedProfitsPage() {
     const [completed, setCompleted] = useState<Set<string>>(new Set());
     const [expandedId, setExpandedId] = useState<string | null>(null);
     const [copiedDescId, setCopiedDescId] = useState<string | null>(null);
+    const [showOfferBanner, setShowOfferBanner] = useState(false);
+    const [loadingNiche, setLoadingNiche] = useState(false);
+    const [loadingLabel, setLoadingLabel] = useState("Loading traffic sources...");
+    const [videoOpen, setVideoOpen] = useState(false);
+    const delayRef = useRef<number | null>(null);
+
+    useEffect(() => () => {
+        if (delayRef.current) window.clearTimeout(delayRef.current);
+    }, []);
 
     useEffect(() => { setCompleted(loadCompleted()); }, []);
 
@@ -144,6 +163,19 @@ export default function AutomatedProfitsPage() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify([...next]));
             return next;
         });
+    };
+
+    const handleNicheChange = (niche: string) => {
+        if (niche === selectedNiche || loadingNiche) return;
+        if (delayRef.current) window.clearTimeout(delayRef.current);
+        setShowOfferBanner(true);
+        setLoadingNiche(true);
+        setLoadingLabel(`Loading ${niche} traffic sources...`);
+        delayRef.current = window.setTimeout(() => {
+            setSelectedNiche(niche);
+            setLoadingNiche(false);
+            delayRef.current = null;
+        }, randomDelay(3500, 4500));
     };
 
     const filteredSources = useMemo(() => {
@@ -171,8 +203,23 @@ export default function AutomatedProfitsPage() {
             animate={{ opacity: 1, x: 0 }}
             className="flex flex-col gap-0 max-w-5xl mx-auto w-full py-6"
         >
+            <PageHeader
+                eyebrow="PREMIUM"
+                title="Automated Income — Traffic On Autopilot"
+                subtitle="100+ free traffic sources — submit once and get ongoing visitors automatically."
+            />
+
+            {(loadingNiche || showOfferBanner) && (
+                <GenerationProgress
+                    active={loadingNiche}
+                    showBanner={showOfferBanner}
+                    label={loadingLabel}
+                    offer="welcome"
+                />
+            )}
+
             {/* Hero */}
-            <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-accent/10 via-surface to-accent-muted/10 border border-accent/20 p-10 md:p-16 flex flex-col items-center text-center gap-6">
+            <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-accent/10 via-surface to-accent-muted/10 border border-accent/20 p-8 md:p-12 flex flex-col items-center text-center gap-4">
                 <div className="absolute top-0 right-0 w-60 h-60 bg-accent/10 rounded-full blur-[100px] pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-40 h-40 bg-accent-muted/10 rounded-full blur-[80px] pointer-events-none" />
 
@@ -180,12 +227,7 @@ export default function AutomatedProfitsPage() {
                     <div className="w-20 h-20 bg-accent/15 border border-accent/30 rounded-3xl flex items-center justify-center">
                         <TrendingUp size={40} className="text-accent" />
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-black text-text-primary tracking-tight leading-tight">
-                        Automated Income - Traffic On Autopilot
-                    </h1>
-                    <p className="text-lg md:text-xl font-bold text-accent">
-                        100+ Free Traffic Sources - Submit Once, Get Traffic Forever
-                    </p>
+                    <h2 className="ds-h2">100+ Free Traffic Sources — Submit Once, Get Traffic Forever</h2>
                     <p className="text-text-secondary text-base max-w-2xl leading-relaxed">
                         Stop chasing traffic every day. Submit your link to these 100+ sites ONCE and get ongoing traffic automatically. Our members have generated over 2.8 million visitors using these sources.
                     </p>
@@ -195,24 +237,20 @@ export default function AutomatedProfitsPage() {
             {/* Video Tutorial */}
             <section className="mt-10 glass-card p-0 overflow-hidden">
                 <div className="flex flex-col md:flex-row">
-                    <div className="md:w-1/2 relative bg-black/40">
-                        <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-                            <iframe
-                                src="https://player.vimeo.com/video/1171734563?badge=0&autopause=0&player_id=0&app_id=58479"
-                                className="absolute inset-0 w-full h-full"
-                                frameBorder="0"
-                                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
-                                allowFullScreen
-                                title="Automated Profits Tutorial"
-                            />
-                        </div>
+                    <div className="md:w-1/2">
+                        <VideoThumbnail
+                            videoId={AUTOPILOT_VIDEO_ID}
+                            title="How to Use Automated Income"
+                            onPlay={() => setVideoOpen(true)}
+                            className="rounded-none border-0"
+                        />
                     </div>
                     <div className="md:w-1/2 p-8 md:p-10 flex flex-col justify-center gap-4">
                         <div className="flex items-center gap-2">
                             <Sparkles size={14} className="text-accent" />
                             <span className="text-[11px] font-bold text-accent uppercase tracking-[0.2em]">Watch First</span>
                         </div>
-                        <h2 className="text-2xl font-bold text-text-primary">How to Use Automated Income</h2>
+                        <h2 className="ds-h2">How to Use Automated Income</h2>
                         <p className="text-text-secondary leading-relaxed">
                             Watch this quick tutorial to learn how to submit your link to these 100+ traffic sources and get automated traffic forever!
                         </p>
@@ -241,7 +279,7 @@ export default function AutomatedProfitsPage() {
                         { num: "3", title: "Get Automatic Traffic", desc: "Once submitted, these sites send you traffic automatically. No daily work needed!" },
                     ].map((step) => (
                         <div key={step.num} className="bg-accent/5 border border-accent/15 rounded-2xl p-6 flex flex-col gap-4">
-                            <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center text-black font-black text-sm">
+                            <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center text-white font-black text-sm">
                                 {step.num}
                             </div>
                             <h3 className="text-lg font-bold text-text-primary">{step.title}</h3>
@@ -285,11 +323,12 @@ export default function AutomatedProfitsPage() {
                     {NICHES.map((niche) => (
                         <button
                             key={niche}
-                            onClick={() => setSelectedNiche(niche)}
+                            onClick={() => handleNicheChange(niche)}
+                            disabled={loadingNiche}
                             className={clsx(
                                 "px-5 py-2.5 rounded-full text-sm font-bold transition-all border",
                                 selectedNiche === niche
-                                    ? "bg-accent border-accent text-black"
+                                    ? "bg-accent border-accent text-white"
                                     : "bg-surface border-border-dim text-text-secondary hover:border-accent/30 hover:text-text-primary"
                             )}
                         >
@@ -322,7 +361,7 @@ export default function AutomatedProfitsPage() {
 
                 {/* Traffic Sources Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {filteredSources.map((source, idx) => {
+                    {!loadingNiche && filteredSources.map((source, idx) => {
                         const isExpanded = expandedId === source.id;
                         const isDone = completed.has(source.id);
 
@@ -415,7 +454,7 @@ export default function AutomatedProfitsPage() {
                                                             className={clsx(
                                                                 "shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all",
                                                                 copiedDescId === source.id
-                                                                    ? "bg-accent text-black"
+                                                                    ? "bg-accent text-white"
                                                                     : "bg-surface border border-border-dim text-text-secondary hover:border-accent/30"
                                                             )}
                                                         >
@@ -440,7 +479,7 @@ export default function AutomatedProfitsPage() {
                                                         className={clsx(
                                                             "py-2.5 px-4 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all",
                                                             isDone
-                                                                ? "bg-accent text-black"
+                                                                ? "bg-accent text-white"
                                                                 : "bg-surface border border-border-dim text-text-secondary hover:border-accent/30"
                                                         )}
                                                     >
@@ -472,6 +511,13 @@ export default function AutomatedProfitsPage() {
                     © 2026 CashTap AI. All rights reserved.
                 </p>
             </footer>
+
+            <VideoOverlay
+                open={videoOpen}
+                onClose={() => setVideoOpen(false)}
+                videoUrl={`https://player.vimeo.com/video/${AUTOPILOT_VIDEO_ID}`}
+                title="How to Use Automated Income"
+            />
         </motion.div>
     );
 }

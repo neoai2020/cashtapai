@@ -11,6 +11,8 @@ import {
 import { useSearch, AnalysisData } from "@/context/SearchContext";
 import { clsx } from "clsx";
 import { InfoHint } from "@/components/ui/InfoHint";
+import { PageHeader } from "@/components/ui/page-header";
+import { GenerationProgress } from "@/components/ui/generation-progress";
 
 function LevelBadge({ level }: { level: string }) {
     const l = level?.toLowerCase() || "";
@@ -68,6 +70,7 @@ export default function AnalysisPage() {
     const [sortKey, setSortKey] = useState<SortKey>("level");
     const [sortDir, setSortDir] = useState<SortDir>("desc");
     const [showGuide, setShowGuide] = useState(false);
+    const [showOfferBanner, setShowOfferBanner] = useState(false);
     const router = useRouter();
 
     const analysisRef = useRef(analysisByVariation);
@@ -77,6 +80,7 @@ export default function AnalysisPage() {
 
     const fetchAnalysis = useCallback(async (variation: string) => {
         if (analysisRef.current[variation]) return;
+        setShowOfferBanner(true);
         setLoadingChips(prev => new Set(prev).add(variation));
         try {
             const resp = await fetch("/api/analysis", {
@@ -181,39 +185,39 @@ export default function AnalysisPage() {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col gap-6 max-w-6xl mx-auto w-full py-6"
         >
-            {/* Header */}
-            <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex flex-col gap-1">
+            <PageHeader
+                eyebrow="STEP 2 OF 4"
+                title="Check Demand"
+                subtitle={`Topic: "${keyword}" · ${variations.length} keyword ideas found`}
+                actions={
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-accent/10 border border-accent/20 flex items-center justify-center rounded-lg">
-                            <Brain size={20} className="text-accent" />
-                        </div>
-                        <div>
-                            <h1 className="text-2xl text-text-primary font-black tracking-tight">Step 2: Check Demand</h1>
-                            <p className="text-sm text-text-muted">
-                                Topic: <span className="text-text-primary font-semibold">&ldquo;{keyword}&rdquo;</span> &middot; {variations.length} keyword ideas found
-                            </p>
-                        </div>
+                        <button
+                            onClick={() => setShowGuide(!showGuide)}
+                            className="flex items-center gap-2 px-3 py-2 border border-border-dim rounded-lg text-[11px] font-bold text-text-muted hover:text-text-primary hover:border-accent/30 transition-all"
+                        >
+                            <Info size={13} />
+                            <span>{showGuide ? "Hide Guide" : "How to Read This"}</span>
+                        </button>
+                        <button
+                            onClick={() => router.push("/radar")}
+                            disabled={analyzedCount === 0}
+                            className="btn-primary h-10 px-5 text-sm rounded-lg"
+                        >
+                            <span>Step 3: Find Ads</span>
+                            <ArrowRight size={16} />
+                        </button>
                     </div>
-                </div>
-                <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => setShowGuide(!showGuide)}
-                        className="flex items-center gap-2 px-3 py-2 border border-border-dim rounded-lg text-[11px] font-bold text-text-muted hover:text-text-primary hover:border-accent/30 transition-all"
-                    >
-                        <Info size={13} />
-                        <span>{showGuide ? "Hide Guide" : "How to Read This"}</span>
-                    </button>
-                    <button
-                        onClick={() => router.push("/radar")}
-                        disabled={analyzedCount === 0}
-                        className="btn-primary h-10 px-5 text-sm rounded-lg"
-                    >
-                        <span>Step 3: Find Ads</span>
-                        <ArrowRight size={16} />
-                    </button>
-                </div>
-            </header>
+                }
+            />
+
+            {(loadingChips.size > 0 || showOfferBanner) && (
+                <GenerationProgress
+                    active={loadingChips.size > 0}
+                    showBanner={showOfferBanner}
+                    label="Analyzing keyword demand..."
+                    offer="earnings"
+                />
+            )}
 
             {/* Progress bar */}
             <div className="flex items-center gap-3">

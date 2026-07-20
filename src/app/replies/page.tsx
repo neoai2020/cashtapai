@@ -12,6 +12,8 @@ import { useRouter } from "next/navigation";
 import { clsx } from "clsx";
 import { SuccessCelebration } from "@/components/dopamine/SuccessCelebration";
 import { InfoHint } from "@/components/ui/InfoHint";
+import { PageHeader } from "@/components/ui/page-header";
+import { GenerationProgress } from "@/components/ui/generation-progress";
 
 function PlatformBadge({ platform }: { platform: string }) {
     const isReddit = platform === "Reddit";
@@ -38,10 +40,12 @@ export default function RepliesPage() {
     const [loadingReplyId, setLoadingReplyId] = useState<string | null>(null);
     const [copiedId, setCopiedId] = useState<string | null>(null);
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+    const [showOfferBanner, setShowOfferBanner] = useState(false);
     const [showCelebration, setShowCelebration] = useState(false);
     const [totalGenerated, setTotalGenerated] = useState(0);
 
     const handleGenerate = async (post: Ad) => {
+        setShowOfferBanner(true);
         setLoadingReplyId(post.id);
         setExpandedIds(prev => new Set(prev).add(post.id));
 
@@ -142,23 +146,23 @@ export default function RepliesPage() {
                 onDone={() => setShowCopyWin(false)}
             />
 
-            {/* Header */}
-            <header className="flex flex-col gap-4">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-accent/10 border border-accent/20 flex items-center justify-center rounded-lg">
-                            <MessageSquare size={20} className="text-accent" />
-                        </div>
-                        <div>
-                            <h1 className="text-2xl text-text-primary font-black tracking-tight">Step 4: Create Replies</h1>
-                            <p className="text-sm text-text-muted">
-                                {currentAds.length} ad{currentAds.length !== 1 ? "s" : ""} selected for &ldquo;{keyword}&rdquo;
-                            </p>
-                        </div>
-                    </div>
-                </div>
+            {(loadingReplyId !== null || showOfferBanner) && (
+                <GenerationProgress
+                    active={loadingReplyId !== null}
+                    showBanner={showOfferBanner}
+                    label="Creating replies..."
+                    offer="earnings"
+                />
+            )}
 
-                {/* Affiliate link */}
+            {/* Header */}
+            <PageHeader
+                eyebrow="STEP 4 OF 4"
+                title="Create Replies"
+                subtitle={`${currentAds.length} ad${currentAds.length !== 1 ? "s" : ""} selected for "${keyword}"`}
+            />
+
+            {/* Affiliate link */}
                 <div className="flex items-center gap-3 p-3 bg-[#0c0c0e] border border-border-dim/30 rounded-xl">
                     <LinkIcon size={14} className="text-text-muted shrink-0" />
                     <input
@@ -173,7 +177,6 @@ export default function RepliesPage() {
                         text="Affiliate link = your own special link. When someone buys through it, you get paid."
                     />
                 </div>
-            </header>
 
             {/* Ad cards */}
             <div className="flex flex-col gap-4">

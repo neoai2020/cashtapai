@@ -3,11 +3,17 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    Crown, Zap, Link as LinkIcon, ArrowRight, Copy, Check,
+    Zap, Link as LinkIcon, ArrowRight, Copy, Check,
     ChevronRight, Flame, RotateCcw, Sparkles, ExternalLink
 } from "lucide-react";
 import { clsx } from "clsx";
 import { InfoHint } from "@/components/ui/InfoHint";
+import { PageHeader } from "@/components/ui/page-header";
+import { GenerationProgress } from "@/components/ui/generation-progress";
+import { VideoThumbnail } from "@/components/ui/video-thumbnail";
+import { VideoOverlay } from "@/components/ui/video-overlay";
+
+const DFY_VIDEO_ID = "1171728175";
 
 interface Post {
     id: string;
@@ -64,6 +70,8 @@ export default function DfyPage() {
     const [loadingPhase, setLoadingPhase] = useState<"" | "finding" | "generating">("");
     const [copiedId, setCopiedId] = useState<string | null>(null);
     const [error, setError] = useState("");
+    const [showOfferBanner, setShowOfferBanner] = useState(false);
+    const [videoOpen, setVideoOpen] = useState(false);
 
     const handleSelectKeyword = (kw: typeof KEYWORDS[0]) => {
         setSelectedKeyword(kw);
@@ -81,6 +89,7 @@ export default function DfyPage() {
 
         setError("");
         setStep(3);
+        setShowOfferBanner(true);
 
         try {
             // Phase 1: Find real posts
@@ -163,48 +172,43 @@ export default function DfyPage() {
             animate={{ opacity: 1, x: 0 }}
             className="flex flex-col gap-10 py-10 max-w-5xl mx-auto w-full"
         >
-            {/* Header */}
-            <header className="flex flex-col items-center text-center gap-5">
-                <div className="w-16 h-16 bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center rounded-2xl shadow-[0_0_40px_rgba(212,175,55,0.1)]">
-                    <Crown size={32} className="text-[#D4AF37] fill-[#D4AF37]/20" />
-                </div>
-                <div className="flex flex-col gap-3">
-                    <h1 className="text-[40px] text-white font-black leading-tight tracking-tight">
-                        Done-For-You <span className="text-accent">Vault</span>
-                    </h1>
-                    <p className="text-[18px] font-bold text-accent/80 tracking-wide uppercase">
-                        50 Proven Search Angles & Keywords Ready to Hunt & Earn
-                    </p>
-                </div>
-            </header>
+            <PageHeader
+                eyebrow="PREMIUM"
+                title="Done-For-You Vault"
+                subtitle="50 proven search angles and keywords — pick one, add your link, get ready-made replies."
+            />
 
-            {/* Video Tutorial */}
             <section className="glass-card p-0 overflow-hidden">
                 <div className="flex flex-col md:flex-row">
-                    <div className="md:w-1/2 relative bg-black/40">
-                        <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-                            <iframe
-                                src="https://player.vimeo.com/video/1171728175?badge=0&autopause=0&player_id=0&app_id=58479"
-                                className="absolute inset-0 w-full h-full"
-                                frameBorder="0"
-                                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
-                                allowFullScreen
-                                title="Done-For-You Tutorial"
-                            />
-                        </div>
+                    <div className="md:w-1/2">
+                        <VideoThumbnail
+                            videoId={DFY_VIDEO_ID}
+                            title="How to Use Done-For-You"
+                            onPlay={() => setVideoOpen(true)}
+                            className="rounded-none border-0"
+                        />
                     </div>
                     <div className="md:w-1/2 p-8 md:p-10 flex flex-col justify-center gap-4">
                         <div className="flex items-center gap-2">
                             <Sparkles size={14} className="text-accent" />
                             <span className="text-[11px] font-bold text-accent uppercase tracking-[0.2em]">Watch First</span>
                         </div>
-                        <h2 className="text-2xl font-bold text-white">How to Use Done-For-You</h2>
+                        <h2 className="ds-h2">How to Use Done-For-You</h2>
                         <p className="text-text-secondary leading-relaxed">
                             Watch this quick tutorial to learn how to pick a keyword, add your link, and get ready-made replies you can post in minutes.
                         </p>
                     </div>
                 </div>
             </section>
+
+            {(loadingPhase !== "" || showOfferBanner) && step === 3 && (
+                <GenerationProgress
+                    active={loadingPhase !== ""}
+                    showBanner={showOfferBanner}
+                    label={loadingPhase === "finding" ? "Finding high-ranking posts..." : loadingPhase === "generating" ? "Generating replies with your link..." : "Preparing your vault..."}
+                    offer="welcome"
+                />
+            )}
 
             {/* Progress Steps */}
             <div className="flex items-center justify-center gap-3">
@@ -222,7 +226,7 @@ export default function DfyPage() {
                         )}>
                             <span className={clsx(
                                 "w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black",
-                                step >= s.num ? "bg-accent text-black" : "bg-white/5 text-text-muted"
+                                step >= s.num ? "bg-accent text-white" : "bg-white/5 text-text-muted"
                             )}>
                                 {step > s.num ? <Check size={12} /> : s.num}
                             </span>
@@ -399,25 +403,6 @@ export default function DfyPage() {
                             </button>
                         </div>
 
-                        {/* Loading state */}
-                        {loadingPhase && (
-                            <div className="flex flex-col items-center py-20 gap-4">
-                                <div className="w-14 h-14 border-2 border-border-dim border-t-accent rounded-full animate-spin" />
-                                <div className="text-center flex flex-col gap-1">
-                                    <span className="text-sm font-bold text-text-primary">
-                                        {loadingPhase === "finding"
-                                            ? "Finding High-Ranking Posts..."
-                                            : "Generating Replies With Your Link..."}
-                                    </span>
-                                    <span className="text-xs text-text-muted">
-                                        {loadingPhase === "finding"
-                                            ? "Scanning Reddit & Quora for the best opportunities"
-                                            : "Crafting personalized replies for each post"}
-                                    </span>
-                                </div>
-                            </div>
-                        )}
-
                         {/* Results */}
                         {!loadingPhase && results.length > 0 && (
                             <div className="flex flex-col gap-4">
@@ -543,6 +528,13 @@ export default function DfyPage() {
                     © 2026 CashTap AI. All rights reserved.
                 </p>
             </footer>
+
+            <VideoOverlay
+                open={videoOpen}
+                onClose={() => setVideoOpen(false)}
+                videoUrl={`https://player.vimeo.com/video/${DFY_VIDEO_ID}`}
+                title="How to Use Done-For-You"
+            />
         </motion.div>
     );
 }

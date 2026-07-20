@@ -39,6 +39,10 @@
   --brand-secondary: #6366F1;
   --brand-tint: rgba(234, 179, 8, 0.1);
 
+  /* Layout */
+  --sidebar-w: 280px;
+  --sidebar-w-collapsed: 76px;
+
   /* Fonts */
   --font-brand: 'Outfit', sans-serif;
   --font-ui: 'Inter', sans-serif;
@@ -48,6 +52,10 @@
 
   /* Legacy/Semantic fallback */
   --text-primary: #F8FAFC;
+}
+
+html[data-sidebar="collapsed"] {
+  --sidebar-w: var(--sidebar-w-collapsed);
 }
 
 @layer base {
@@ -60,10 +68,28 @@
     background-color: var(--bg-page);
     color: var(--text-primary);
     font-family: var(--font-ui);
-    @apply antialiased min-h-screen overflow-x-hidden max-w-full;
+    @apply antialiased min-h-dvh overflow-x-hidden max-w-full;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
     background-image:
       radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.03) 0px, transparent 50%),
       radial-gradient(at 100% 100%, rgba(234, 179, 8, 0.03) 0px, transparent 50%);
+  }
+
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 
   h1,
@@ -96,9 +122,58 @@
     @apply bg-surface border border-border-dim rounded-xl p-6 transition-all duration-200 hover:border-accent/40 hover:shadow-gold cursor-pointer;
   }
 
+  /* Design system typography */
+  .page-eyebrow {
+    @apply text-[11px] font-bold uppercase tracking-[0.2em] text-accent;
+  }
+
+  .ds-h1 {
+    @apply text-[clamp(1.75rem,4vw,2.4rem)] font-black text-text-primary tracking-tight leading-tight;
+  }
+
+  .ds-h2 {
+    @apply text-xl sm:text-2xl font-bold text-text-primary tracking-tight;
+  }
+
+  .ds-h3 {
+    @apply text-base font-bold text-text-primary;
+  }
+
+  .ds-h4 {
+    @apply text-[11px] font-bold uppercase tracking-wider text-text-muted;
+  }
+
+  .ds-label {
+    @apply text-sm font-medium text-text-secondary;
+  }
+
+  .ds-subtitle {
+    @apply text-sm sm:text-base text-text-secondary leading-relaxed;
+  }
+
+  .ds-well {
+    @apply rounded-xl border border-border-dim/40 bg-page/60 p-4;
+  }
+
   /* Refined Buttons */
   .btn-primary {
-    @apply bg-accent text-text-on-accent px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-50;
+    @apply bg-gradient-to-r from-accent to-[#ca9a06] text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50 shadow-[0_4px_20px_rgba(234,179,8,0.2)];
+  }
+
+  .btn-soft {
+    @apply bg-accent/10 border border-accent/25 text-accent px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all hover:bg-accent/15 active:scale-[0.98];
+  }
+
+  .btn-danger {
+    @apply bg-red-500/90 text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all hover:bg-red-500 active:scale-[0.98];
+  }
+
+  .btn-chip {
+    @apply px-3 py-1.5 rounded-full text-xs font-bold border border-border-dim text-text-muted transition-colors;
+  }
+
+  .btn-chip-active {
+    @apply bg-accent text-white border-accent;
   }
 
   .btn-secondary {

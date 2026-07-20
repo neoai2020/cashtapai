@@ -9,6 +9,8 @@ import {
 import { useSearch, Ad } from "@/context/SearchContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { clsx } from "clsx";
+import { PageHeader } from "@/components/ui/page-header";
+import { GenerationProgress } from "@/components/ui/generation-progress";
 
 function PlatformBadge({ platform }: { platform: string }) {
     const isReddit = platform === "Reddit";
@@ -91,11 +93,13 @@ export default function RadarPage() {
     } = useSearch();
 
     const [loadingChip, setLoadingChip] = useState<string | null>(null);
+    const [showOfferBanner, setShowOfferBanner] = useState(false);
     const router = useRouter();
 
     const currentPosts = postsByVariation[activeChip] || [];
 
     const fetchPostsForChip = async (chip: string) => {
+        setShowOfferBanner(true);
         setLoadingChip(chip);
         try {
             const resp = await fetch("/api/jackpots", {
@@ -153,38 +157,39 @@ export default function RadarPage() {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col gap-6 max-w-6xl mx-auto w-full py-6"
         >
-            {/* Header */}
-            <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-accent/10 border border-accent/20 flex items-center justify-center rounded-lg">
-                        <Radar size={20} className="text-accent" />
+            <PageHeader
+                eyebrow="STEP 3 OF 4"
+                title="Find Ads"
+                subtitle="Click ads to select them, then create replies in the next step."
+                actions={
+                    <div className="flex items-center gap-3">
+                        <div className="flex flex-col items-end px-3 border-r border-border-dim/30">
+                            <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest">Selected</span>
+                            <span className="text-lg font-black text-accent tabular-nums">{selectedAds.length}</span>
+                        </div>
+                        <button
+                            onClick={() => router.push("/replies")}
+                            disabled={selectedAds.length === 0}
+                            className={clsx(
+                                "btn-primary h-10 px-5 text-sm rounded-lg group",
+                                selectedAds.length === 0 && "opacity-40 grayscale pointer-events-none"
+                            )}
+                        >
+                            <span>Step 4: Create Replies</span>
+                            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                        </button>
                     </div>
-                    <div>
-                        <h1 className="text-2xl text-text-primary font-black tracking-tight">Step 3: Find Ads</h1>
-                        <p className="text-sm text-text-muted">
-                            Click ads to select them, then create replies in the next step.
-                        </p>
-                    </div>
-                </div>
+                }
+            />
 
-                <div className="flex items-center gap-3">
-                    <div className="flex flex-col items-end px-3 border-r border-border-dim/30">
-                        <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest">Selected</span>
-                        <span className="text-lg font-black text-accent tabular-nums">{selectedAds.length}</span>
-                    </div>
-                    <button
-                        onClick={() => router.push("/replies")}
-                        disabled={selectedAds.length === 0}
-                        className={clsx(
-                            "btn-primary h-10 px-5 text-sm rounded-lg group",
-                            selectedAds.length === 0 && "opacity-40 grayscale pointer-events-none"
-                        )}
-                    >
-                        <span>Step 4: Create Replies</span>
-                        <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                    </button>
-                </div>
-            </header>
+            {(loadingChip !== null || showOfferBanner) && (
+                <GenerationProgress
+                    active={loadingChip !== null}
+                    showBanner={showOfferBanner}
+                    label={`Finding ads for "${loadingChip || activeChip}"...`}
+                    offer="earnings"
+                />
+            )}
 
             {/* Keyword chips */}
             <div id="radar-keyword-chips" className="flex flex-wrap gap-2">
@@ -195,7 +200,7 @@ export default function RadarPage() {
                         className={clsx(
                             "px-3.5 py-1.5 rounded-lg border text-[12px] font-semibold transition-all",
                             activeChip === v
-                                ? "bg-accent text-black border-accent"
+                                ? "bg-accent text-white border-accent"
                                 : "bg-surface border-border-dim/40 text-text-muted hover:border-accent/30 hover:text-text-primary"
                         )}
                     >

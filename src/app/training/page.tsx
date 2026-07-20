@@ -3,11 +3,15 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    GraduationCap, Play, Search, Brain, Radar, MessageSquare,
+    GraduationCap, Search, Brain, Radar, MessageSquare,
     ChevronDown, ChevronUp, ArrowRight, Lightbulb, HelpCircle,
     CheckCircle2, Target, Copy, ExternalLink, DollarSign, Zap,
     BookOpen, Star
 } from "lucide-react";
+import Link from "next/link";
+import { PageHeader } from "@/components/ui/page-header";
+import { VideoThumbnail } from "@/components/ui/video-thumbnail";
+import { VideoOverlay } from "@/components/ui/video-overlay";
 
 const VIDEOS = [
     {
@@ -326,30 +330,25 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 }
 
 export default function TrainingPage() {
+    const [openVideo, setOpenVideo] = useState<{ id: string; title: string } | null>(null);
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col gap-12 max-w-5xl mx-auto w-full py-6"
         >
-            {/* Header */}
-            <header className="flex flex-col gap-2">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-accent/10 border border-accent/20 flex items-center justify-center rounded-lg">
-                        <GraduationCap size={20} className="text-accent" />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl text-text-primary font-black tracking-tight">Training</h1>
-                        <p className="text-sm text-text-muted">Everything you need to start earning with CashTap AI.</p>
-                    </div>
-                </div>
-            </header>
+            <PageHeader
+                eyebrow="TRAINING"
+                title="Training Academy"
+                subtitle="Everything you need to start earning with CashTap AI."
+            />
 
             {/* Video Training */}
             <section className="flex flex-col gap-6">
                 <div className="flex items-center gap-2">
-                    <Play size={16} className="text-accent" />
-                    <h2 className="text-lg font-bold text-white">Video Training</h2>
+                    <GraduationCap size={16} className="text-accent" />
+                    <h2 className="ds-h2">Video Training</h2>
                     <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-2">Watch these first</span>
                 </div>
 
@@ -362,16 +361,11 @@ export default function TrainingPage() {
                             transition={{ delay: i * 0.1 }}
                             className="border border-border-dim/30 rounded-xl overflow-hidden bg-[#0c0c0e]"
                         >
-                            <div className="relative w-full bg-black" style={{ paddingBottom: "56.25%" }}>
-                                <iframe
-                                    src={`https://player.vimeo.com/video/${video.id}?badge=0&autopause=0&player_id=0&app_id=58479`}
-                                    className="absolute inset-0 w-full h-full"
-                                    frameBorder="0"
-                                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
-                                    allowFullScreen
-                                    title={video.title}
-                                />
-                            </div>
+                            <VideoThumbnail
+                                videoId={video.id}
+                                title={video.title}
+                                onPlay={() => setOpenVideo({ id: video.id, title: video.title })}
+                            />
                             <div className="p-4 flex flex-col gap-1.5">
                                 <div className="flex items-center gap-2">
                                     <span className="text-[9px] font-bold text-accent uppercase tracking-widest bg-accent/10 px-2 py-0.5 rounded">
@@ -390,90 +384,36 @@ export default function TrainingPage() {
             <section className="flex flex-col gap-6">
                 <div className="flex items-center gap-2">
                     <Star size={16} className="text-accent" />
-                    <h2 className="text-lg font-bold text-white">Premium Features</h2>
+                    <h2 className="ds-h2">Premium Features</h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <motion.div
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.05 }}
-                        className="border border-border-dim/30 rounded-xl overflow-hidden bg-[#0c0c0e]"
-                    >
-                        <div className="relative w-full bg-black" style={{ paddingBottom: "56.25%" }}>
-                            <iframe
-                                src="https://player.vimeo.com/video/1171728175?badge=0&autopause=0&player_id=0&app_id=58479"
-                                className="absolute inset-0 w-full h-full"
-                                frameBorder="0"
-                                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
-                                allowFullScreen
-                                title="Premium Feature 1: Done For You"
+                    {[
+                        { id: "1171728175", badge: "Premium Feature 1", title: "Done For You", desc: "Learn how to use the Done-For-You feature to pick a keyword, add your link, and get ready-made replies to post and earn." },
+                        { id: "1171734563", badge: "Premium Feature 2", title: "Automated Profits", desc: "Learn how to use the Automated Profits feature to submit your link to 100+ traffic sources and get automated traffic forever." },
+                        { id: "1171721099", badge: "Premium Feature 3", title: "Instant Income", desc: "Learn how to use the Instant Income feature to copy proven Facebook posts and start earning commissions right away." },
+                    ].map((video, i) => (
+                        <motion.div
+                            key={video.id}
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.05 + i * 0.05 }}
+                            className="border border-border-dim/30 rounded-xl overflow-hidden bg-[#0c0c0e]"
+                        >
+                            <VideoThumbnail
+                                videoId={video.id}
+                                title={video.title}
+                                onPlay={() => setOpenVideo({ id: video.id, title: video.title })}
                             />
-                        </div>
-                        <div className="p-4 flex flex-col gap-1.5">
-                            <div className="flex items-center gap-2">
-                                <span className="text-[9px] font-bold text-accent uppercase tracking-widest bg-accent/10 px-2 py-0.5 rounded">
-                                    Premium Feature 1
+                            <div className="p-4 flex flex-col gap-1.5">
+                                <span className="text-[9px] font-bold text-accent uppercase tracking-widest bg-accent/10 px-2 py-0.5 rounded w-fit">
+                                    {video.badge}
                                 </span>
+                                <h3 className="text-sm font-bold text-white">{video.title}</h3>
+                                <p className="text-[12px] text-text-muted leading-relaxed">{video.desc}</p>
                             </div>
-                            <h3 className="text-sm font-bold text-white">Done For You</h3>
-                            <p className="text-[12px] text-text-muted leading-relaxed">Learn how to use the Done-For-You feature to pick a keyword, add your link, and get ready-made replies to post and earn.</p>
-                        </div>
-                    </motion.div>
-
-                    <motion.div
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="border border-border-dim/30 rounded-xl overflow-hidden bg-[#0c0c0e]"
-                    >
-                        <div className="relative w-full bg-black" style={{ paddingBottom: "56.25%" }}>
-                            <iframe
-                                src="https://player.vimeo.com/video/1171734563?badge=0&autopause=0&player_id=0&app_id=58479"
-                                className="absolute inset-0 w-full h-full"
-                                frameBorder="0"
-                                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
-                                allowFullScreen
-                                title="Premium Feature 2: Automated Profits"
-                            />
-                        </div>
-                        <div className="p-4 flex flex-col gap-1.5">
-                            <div className="flex items-center gap-2">
-                                <span className="text-[9px] font-bold text-accent uppercase tracking-widest bg-accent/10 px-2 py-0.5 rounded">
-                                    Premium Feature 2
-                                </span>
-                            </div>
-                            <h3 className="text-sm font-bold text-white">Automated Profits</h3>
-                            <p className="text-[12px] text-text-muted leading-relaxed">Learn how to use the Automated Profits feature to submit your link to 100+ traffic sources and get automated traffic forever.</p>
-                        </div>
-                    </motion.div>
-
-                    <motion.div
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.15 }}
-                        className="border border-border-dim/30 rounded-xl overflow-hidden bg-[#0c0c0e]"
-                    >
-                        <div className="relative w-full bg-black" style={{ paddingBottom: "56.25%" }}>
-                            <iframe
-                                src="https://player.vimeo.com/video/1171721099?badge=0&autopause=0&player_id=0&app_id=58479"
-                                className="absolute inset-0 w-full h-full"
-                                frameBorder="0"
-                                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
-                                allowFullScreen
-                                title="Premium Feature 3: Instant Access"
-                            />
-                        </div>
-                        <div className="p-4 flex flex-col gap-1.5">
-                            <div className="flex items-center gap-2">
-                                <span className="text-[9px] font-bold text-accent uppercase tracking-widest bg-accent/10 px-2 py-0.5 rounded">
-                                    Premium Feature 3
-                                </span>
-                            </div>
-                            <h3 className="text-sm font-bold text-white">Instant Income</h3>
-                            <p className="text-[12px] text-text-muted leading-relaxed">Learn how to use the Instant Income feature to copy proven Facebook posts and start earning commissions right away.</p>
-                        </div>
-                    </motion.div>
+                        </motion.div>
+                    ))}
                 </div>
             </section>
 
@@ -621,15 +561,24 @@ export default function TrainingPage() {
                     <h3 className="text-base font-bold text-white">Ready to start earning?</h3>
                     <p className="text-[13px] text-text-muted">Go to Step 1 and search for your first topic now.</p>
                 </div>
-                <a
+                <Link
                     href="/search"
                     className="btn-primary h-11 px-6 text-sm rounded-lg flex items-center gap-2 shrink-0"
                 >
                     <Search size={16} />
                     <span>Go to Step 1</span>
                     <ArrowRight size={14} />
-                </a>
+                </Link>
             </section>
+
+            {openVideo && (
+                <VideoOverlay
+                    open={!!openVideo}
+                    onClose={() => setOpenVideo(null)}
+                    videoUrl={`https://player.vimeo.com/video/${openVideo.id}`}
+                    title={openVideo.title}
+                />
+            )}
         </motion.div>
     );
 }

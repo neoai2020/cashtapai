@@ -1,15 +1,24 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    Facebook, PlayCircle, CheckCircle2, Link as LinkIcon,
-    Copy, Check, ArrowRight, DollarSign, Users, Clock,
+    Facebook, CheckCircle2, Link as LinkIcon,
+    Copy, Check, ArrowRight, DollarSign,
     MessageSquare, Sparkles, BookOpen, ChevronDown, ChevronUp,
-    ExternalLink
 } from "lucide-react";
 import { clsx } from "clsx";
 import { InfoHint } from "@/components/ui/InfoHint";
+import { PageHeader } from "@/components/ui/page-header";
+import { GenerationProgress } from "@/components/ui/generation-progress";
+import { VideoThumbnail } from "@/components/ui/video-thumbnail";
+import { VideoOverlay } from "@/components/ui/video-overlay";
+
+const INSTANT_VIDEO_ID = "1171721099";
+
+function randomDelay(minMs: number, maxMs: number) {
+    return minMs + Math.floor(Math.random() * (maxMs - minMs + 1));
+}
 
 const NICHES = [
     "All Niches",
@@ -117,6 +126,15 @@ export default function InstantIncomePage() {
     const [showPosts, setShowPosts] = useState(false);
     const [copiedId, setCopiedId] = useState<string | null>(null);
     const [showGuide, setShowGuide] = useState(true);
+    const [showOfferBanner, setShowOfferBanner] = useState(false);
+    const [loadingReveal, setLoadingReveal] = useState(false);
+    const [loadingLabel, setLoadingLabel] = useState("Loading your posts...");
+    const [videoOpen, setVideoOpen] = useState(false);
+    const delayRef = useRef<number | null>(null);
+
+    useEffect(() => () => {
+        if (delayRef.current) window.clearTimeout(delayRef.current);
+    }, []);
 
     const filteredPosts = useMemo(() => {
         const base = selectedNiche === "All Niches"
@@ -140,11 +158,33 @@ export default function InstantIncomePage() {
         setTimeout(() => setCopiedId(null), 2000);
     };
 
+    const runDelayedAction = (label: string, action: () => void, minMs = 3500, maxMs = 4500) => {
+        if (delayRef.current) window.clearTimeout(delayRef.current);
+        setShowOfferBanner(true);
+        setLoadingReveal(true);
+        setLoadingLabel(label);
+        setShowPosts(false);
+        delayRef.current = window.setTimeout(() => {
+            action();
+            setLoadingReveal(false);
+            delayRef.current = null;
+        }, randomDelay(minMs, maxMs));
+    };
+
     const handleShowPosts = () => {
-        setShowPosts(true);
-        setTimeout(() => {
-            document.getElementById("posts-section")?.scrollIntoView({ behavior: "smooth" });
-        }, 100);
+        runDelayedAction("Preparing your Facebook posts...", () => {
+            setShowPosts(true);
+            setTimeout(() => {
+                document.getElementById("posts-section")?.scrollIntoView({ behavior: "smooth" });
+            }, 100);
+        }, 4000, 4500);
+    };
+
+    const handleNicheChange = (niche: string) => {
+        if (niche === selectedNiche) return;
+        runDelayedAction(`Loading ${niche} posts...`, () => {
+            setSelectedNiche(niche);
+        }, 3500, 4500);
     };
 
     return (
@@ -153,8 +193,23 @@ export default function InstantIncomePage() {
             animate={{ opacity: 1, x: 0 }}
             className="flex flex-col gap-0 max-w-5xl mx-auto w-full py-6"
         >
+            <PageHeader
+                eyebrow="PREMIUM"
+                title="Instant Income: Facebook Posts"
+                subtitle="200+ ready-to-post messages for Facebook groups — copy, paste, and earn."
+            />
+
+            {(loadingReveal || showOfferBanner) && (
+                <GenerationProgress
+                    active={loadingReveal}
+                    showBanner={showOfferBanner}
+                    label={loadingLabel}
+                    offer="welcome"
+                />
+            )}
+
             {/* Hero Section */}
-            <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-accent/10 via-surface to-accent-muted/10 border border-accent/20 p-10 md:p-16 flex flex-col items-center text-center gap-6">
+            <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-accent/10 via-surface to-accent-muted/10 border border-accent/20 p-8 md:p-12 flex flex-col items-center text-center gap-4">
                 <div className="absolute top-0 right-0 w-60 h-60 bg-accent/10 rounded-full blur-[100px] pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-40 h-40 bg-accent-muted/10 rounded-full blur-[80px] pointer-events-none" />
 
@@ -163,13 +218,7 @@ export default function InstantIncomePage() {
                         <Facebook size={40} className="text-accent" />
                     </div>
 
-                    <h1 className="text-4xl md:text-5xl font-black text-text-primary tracking-tight leading-tight">
-                        Instant Income: Facebook Posts
-                    </h1>
-
-                    <p className="text-lg md:text-xl font-bold text-accent">
-                        200+ Ready-to-Post Messages for Facebook Groups
-                    </p>
+                    <h2 className="ds-h2">200+ Ready-to-Post Messages for Facebook Groups</h2>
 
                     <p className="text-text-secondary text-base max-w-2xl leading-relaxed">
                         Copy these proven posts, paste them in Facebook groups, and start making money TODAY. No tech skills needed!
@@ -180,24 +229,20 @@ export default function InstantIncomePage() {
             {/* Video Tutorial Section */}
             <section className="mt-10 glass-card p-0 overflow-hidden">
                 <div className="flex flex-col md:flex-row">
-                    <div className="md:w-1/2 relative bg-black/40">
-                        <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-                            <iframe
-                                src="https://player.vimeo.com/video/1171721099?badge=0&autopause=0&player_id=0&app_id=58479"
-                                className="absolute inset-0 w-full h-full"
-                                frameBorder="0"
-                                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
-                                allowFullScreen
-                                title="Instant Access Tutorial"
-                            />
-                        </div>
+                    <div className="md:w-1/2">
+                        <VideoThumbnail
+                            videoId={INSTANT_VIDEO_ID}
+                            title="How to Use Instant Income"
+                            onPlay={() => setVideoOpen(true)}
+                            className="rounded-none border-0"
+                        />
                     </div>
                     <div className="md:w-1/2 p-8 md:p-10 flex flex-col justify-center gap-4">
                         <div className="flex items-center gap-2">
                             <Sparkles size={14} className="text-accent" />
                             <span className="text-[11px] font-bold text-accent uppercase tracking-[0.2em]">Watch First</span>
                         </div>
-                        <h2 className="text-2xl font-bold text-text-primary">How to Use Instant Income</h2>
+                        <h2 className="ds-h2">How to Use Instant Income</h2>
                         <p className="text-text-secondary leading-relaxed">
                             Watch this quick tutorial to learn how to copy these Facebook posts and start making money instantly. Simple and easy!
                         </p>
@@ -337,11 +382,12 @@ export default function InstantIncomePage() {
                         {NICHES.map((niche) => (
                             <button
                                 key={niche}
-                                onClick={() => { setSelectedNiche(niche); setShowPosts(false); }}
+                                onClick={() => handleNicheChange(niche)}
+                                disabled={loadingReveal}
                                 className={clsx(
                                     "px-5 py-2.5 rounded-full text-sm font-bold transition-all border",
                                     selectedNiche === niche
-                                        ? "bg-accent border-accent text-black"
+                                        ? "bg-accent border-accent text-white"
                                         : "bg-surface border-border-dim text-text-secondary hover:border-accent/30 hover:text-text-primary"
                                 )}
                             >
@@ -399,6 +445,7 @@ export default function InstantIncomePage() {
 
                     <motion.button
                         onClick={handleShowPosts}
+                        disabled={loadingReveal}
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.99 }}
                         className="btn-primary py-4 text-base mt-2"
@@ -489,6 +536,13 @@ export default function InstantIncomePage() {
                     © 2026 CashTap AI. All rights reserved.
                 </p>
             </footer>
+
+            <VideoOverlay
+                open={videoOpen}
+                onClose={() => setVideoOpen(false)}
+                videoUrl={`https://player.vimeo.com/video/${INSTANT_VIDEO_ID}`}
+                title="How to Use Instant Income"
+            />
         </motion.div>
     );
 }

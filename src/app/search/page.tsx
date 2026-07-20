@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, ArrowRight, History, Loader2, Zap } from "lucide-react";
+import { Search, ArrowRight, History, Loader2 } from "lucide-react";
 import { useSearch } from "@/context/SearchContext";
 import { motion } from "framer-motion";
 import { SuccessCelebration } from "@/components/dopamine/SuccessCelebration";
 import { InfoHint } from "@/components/ui/InfoHint";
 import { InlineError } from "@/components/ui/InlineError";
+import { PageHeader } from "@/components/ui/page-header";
+import { GenerationProgress } from "@/components/ui/generation-progress";
 
 export default function SearchPage() {
     const {
@@ -16,6 +18,7 @@ export default function SearchPage() {
         history, addToHistory
     } = useSearch();
     const [loading, setLoading] = useState(false);
+    const [showOfferBanner, setShowOfferBanner] = useState(false);
     const [showCelebration, setShowCelebration] = useState(false);
     const [foundCount, setFoundCount] = useState(0);
     const [error, setError] = useState("");
@@ -26,6 +29,7 @@ export default function SearchPage() {
         if (!searchVal) return;
 
         setLoading(true);
+        setShowOfferBanner(true);
         setError("");
         addToHistory(searchVal);
 
@@ -60,33 +64,36 @@ export default function SearchPage() {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col items-center justify-center min-h-[70vh] gap-10 max-w-xl mx-auto w-full"
         >
-            <SuccessCelebration
-                show={showCelebration}
-                title={`Found ${foundCount} ad ideas!`}
-                subtitle="Great start. Let's check which ones have the most demand."
-                onDone={() => { setShowCelebration(false); router.push("/analysis"); }}
-            />
-
-            {/* Header */}
-            <div className="text-center flex flex-col items-center gap-3">
-                <div className="flex items-center gap-2 px-3 py-1 bg-accent/5 rounded-full border border-accent/15">
-                    <Zap size={12} className="text-accent" />
-                    <span className="text-[10px] font-bold text-accent uppercase tracking-wider">Step 1 of 4</span>
-                </div>
-                <h1 className="text-3xl text-text-primary font-black tracking-tight inline-flex items-center gap-2">
-                    Enter Your Ad Topic
+            <PageHeader
+                eyebrow="STEP 1 OF 4"
+                title="Enter Your Ad Topic"
+                subtitle="Type one topic below. We will find related ads and conversations from Reddit and YouTube."
+                className="text-center items-center [&_.ds-h1]:inline-flex [&_.ds-h1]:items-center [&_.ds-h1]:gap-2 [&_.ds-h1]:justify-center"
+                actions={
                     <InfoHint
                         label="What is an ad topic?"
                         text="A topic is just the subject people are searching for — like 'weight loss' or 'dog food'. Pick one thing you want to promote."
                     />
-                </h1>
-                <p className="text-sm text-text-muted max-w-md">
-                    Type one topic below. We will find related ads and conversations from Reddit and YouTube.
-                </p>
-            </div>
+                }
+            />
+
+            {(loading || showOfferBanner) && (
+                <GenerationProgress
+                    active={loading}
+                    showBanner={showOfferBanner}
+                    label="Finding ads..."
+                    offer="earnings"
+                />
+            )}
 
             {/* Search Input */}
             <div className="w-full flex flex-col gap-3">
+                <SuccessCelebration
+                    show={showCelebration}
+                    title={`Found ${foundCount} ad ideas!`}
+                    subtitle="Great start. Let's check which ones have the most demand."
+                    onDone={() => { setShowCelebration(false); router.push("/analysis"); }}
+                />
                 <div className="relative group">
                     <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent transition-colors" />
                     <input

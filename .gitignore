@@ -43,3 +43,7 @@ public/*.mp4
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# macOS AppleDouble files
+._*
+**/._*
