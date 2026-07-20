@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Search, ArrowRight, History, Loader2 } from "lucide-react";
 import { useSearch } from "@/context/SearchContext";
 import { motion } from "framer-motion";
-import { SuccessCelebration } from "@/components/dopamine/SuccessCelebration";
 import { InfoHint } from "@/components/ui/InfoHint";
 import { InlineError } from "@/components/ui/InlineError";
 import { PageHeader } from "@/components/ui/page-header";
@@ -19,8 +18,6 @@ export default function SearchPage() {
     } = useSearch();
     const [loading, setLoading] = useState(false);
     const [showOfferBanner, setShowOfferBanner] = useState(false);
-    const [showCelebration, setShowCelebration] = useState(false);
-    const [foundCount, setFoundCount] = useState(0);
     const [error, setError] = useState("");
     const router = useRouter();
 
@@ -48,8 +45,7 @@ export default function SearchPage() {
 
             setVariations(data.variations || []);
             setActiveChip(data.variations?.[0] || "");
-            setFoundCount(data.variations?.length || 0);
-            setShowCelebration(true);
+            router.push("/analysis");
         } catch (e) {
             console.error(e);
             setError("We couldn't connect. Check your internet and try again.");
@@ -88,12 +84,6 @@ export default function SearchPage() {
 
             {/* Search Input */}
             <div className="w-full flex flex-col gap-3">
-                <SuccessCelebration
-                    show={showCelebration}
-                    title={`Found ${foundCount} ad ideas!`}
-                    subtitle="Great start. Let's check which ones have the most demand."
-                    onDone={() => { setShowCelebration(false); router.push("/analysis"); }}
-                />
                 <div className="relative group">
                     <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent transition-colors" />
                     <input

@@ -10,7 +10,6 @@ import {
 import { useSearch, Ad } from "@/context/SearchContext";
 import { useRouter } from "next/navigation";
 import { clsx } from "clsx";
-import { SuccessCelebration } from "@/components/dopamine/SuccessCelebration";
 import { InfoHint } from "@/components/ui/InfoHint";
 import { PageHeader } from "@/components/ui/page-header";
 import { GenerationProgress } from "@/components/ui/generation-progress";
@@ -41,8 +40,6 @@ export default function RepliesPage() {
     const [copiedId, setCopiedId] = useState<string | null>(null);
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
     const [showOfferBanner, setShowOfferBanner] = useState(false);
-    const [showCelebration, setShowCelebration] = useState(false);
-    const [totalGenerated, setTotalGenerated] = useState(0);
 
     const handleGenerate = async (post: Ad) => {
         setShowOfferBanner(true);
@@ -59,9 +56,6 @@ export default function RepliesPage() {
             const result = data.results?.[0];
             if (result?.replies) {
                 setRepliesByPostId({ ...repliesByPostId, [post.id]: result.replies });
-                const newTotal = totalGenerated + 1;
-                setTotalGenerated(newTotal);
-                if (newTotal === 1) setShowCelebration(true);
             }
         } catch (e) {
             console.error(e);
@@ -78,15 +72,9 @@ export default function RepliesPage() {
         });
     };
 
-    const [copyCount, setCopyCount] = useState(0);
-    const [showCopyWin, setShowCopyWin] = useState(false);
-
     const handleCopy = (text: string, id: string) => {
         navigator.clipboard.writeText(text);
         setCopiedId(id);
-        const newCount = copyCount + 1;
-        setCopyCount(newCount);
-        if (newCount === 3) setShowCopyWin(true);
         setTimeout(() => setCopiedId(null), 2000);
     };
 
@@ -133,19 +121,6 @@ export default function RepliesPage() {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col gap-6 max-w-5xl mx-auto w-full py-6"
         >
-            <SuccessCelebration
-                show={showCelebration}
-                title="Replies Ready to Copy!"
-                subtitle="Just paste these under the ad and watch the clicks roll in."
-                onDone={() => setShowCelebration(false)}
-            />
-            <SuccessCelebration
-                show={showCopyWin}
-                title="You're On Fire!"
-                subtitle="3 replies copied. You're doing exactly what top earners do. Keep going!"
-                onDone={() => setShowCopyWin(false)}
-            />
-
             {(loadingReplyId !== null || showOfferBanner) && (
                 <GenerationProgress
                     active={loadingReplyId !== null}
