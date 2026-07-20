@@ -2,7 +2,8 @@ import * as cheerio from 'cheerio';
 
 async function test() {
     const keyword = "Top-rated air fryers under $100";
-    const scraperKey = "32b75ca1bab9047cfa6197108747e16f";
+    const scraperKey = process.env.SCRAPERAPI_KEY || process.env.SCRAPER_API_KEY;
+    if (!scraperKey) throw new Error("Missing SCRAPERAPI_KEY / SCRAPER_API_KEY");
     const targetUrl = `https://www.google.com/search?q=site%3Areddit.com+OR+site%3Ayoutube.com+${encodeURIComponent(keyword)}+after%3A2024-01-01`;
     const scraperUrl = `https://api.scraperapi.com/?api_key=${scraperKey}&url=${encodeURIComponent(targetUrl)}&render=true&premium=true`;
 
