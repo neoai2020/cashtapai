@@ -5,11 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
     LayoutGrid, Search, Radar, MessageSquare, MoreHorizontal,
-    Brain, GraduationCap, TrendingUp, Scan, Sparkles, Rocket,
+    Brain, GraduationCap, TrendingUp, Sparkles,
     LogOut, ExternalLink, X, Headphones, ChevronRight
 } from "lucide-react";
 import { clsx } from "clsx";
 import { useSearch } from "@/context/SearchContext";
+import { PREMIUM_FEATURES } from "@/lib/premium-features";
 
 const MAIN_TABS = [
     { path: "/dashboard", label: "Home", icon: LayoutGrid },
@@ -22,12 +23,6 @@ const MORE_NAV = [
     { path: "/analysis", label: "Step 2: Check Demand", icon: Brain },
     { path: "/training", label: "Training", icon: GraduationCap },
     { path: "/scale-training", label: "Scale to $1k–$5k/day", icon: TrendingUp },
-];
-
-const PREMIUM = [
-    { path: "/dfy", label: "Done-For-You", icon: Scan },
-    { path: "/instant", label: "Instant Income", icon: Sparkles },
-    { path: "/autopilot", label: "Automated Profits", icon: Rocket },
 ];
 
 const EXCLUSIVE_OFFERS = [
@@ -54,7 +49,7 @@ export function BottomNav() {
     }, [moreOpen]);
 
     const isMoreActive = MORE_NAV.some((item) => pathname === item.path)
-        || PREMIUM.some((item) => pathname === item.path);
+        || PREMIUM_FEATURES.some((item) => pathname === item.path);
 
     return (
         <>
@@ -150,11 +145,12 @@ export function BottomNav() {
                                 })}
                             </div>
 
-                            <div className="flex flex-col gap-2">
-                                <span className="text-[10px] font-black tracking-[0.2em] text-accent uppercase px-2">
+                            <div className="premium-nav-section flex flex-col gap-1 p-2">
+                                <span className="flex items-center gap-1.5 text-[10px] font-black tracking-[0.2em] text-accent uppercase px-2 pt-1 pb-1.5">
+                                    <Sparkles size={12} className="animate-sparkle-pulse" fill="currentColor" />
                                     Premium Features
                                 </span>
-                                {PREMIUM.map((item) => {
+                                {PREMIUM_FEATURES.map((item) => {
                                     const Icon = item.icon;
                                     const active = pathname === item.path;
                                     return (
@@ -163,13 +159,11 @@ export function BottomNav() {
                                             href={item.path}
                                             onClick={() => setMoreOpen(false)}
                                             className={clsx(
-                                                "flex items-center gap-3 min-h-[52px] px-3 rounded-xl border transition-colors",
-                                                active
-                                                    ? "bg-accent/10 border-accent/30 text-accent"
-                                                    : "border-white/5 text-text-secondary hover:border-white/10"
+                                                "premium-sidebar-item flex items-center gap-3 min-h-[52px] px-3 rounded-xl transition-all duration-300",
+                                                active ? "is-active" : "text-text-secondary"
                                             )}
                                         >
-                                            <Icon size={18} />
+                                            <Icon size={18} className={active ? "text-accent" : "text-accent/80"} />
                                             <span className="text-sm font-medium flex-1">{item.label}</span>
                                         </Link>
                                     );

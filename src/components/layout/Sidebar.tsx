@@ -4,12 +4,13 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
     LayoutGrid, Radar, LogOut, ChevronRight, GraduationCap, Target, Sparkles,
-    Rocket, Scan, Search, MessageSquare, Brain, TrendingUp, ExternalLink,
+    Search, MessageSquare, Brain, TrendingUp, ExternalLink,
     PanelLeftClose, PanelLeftOpen
 } from "lucide-react";
 import { useSearch } from "@/context/SearchContext";
 import { clsx } from "clsx";
 import { motion } from "framer-motion";
+import { PREMIUM_FEATURES } from "@/lib/premium-features";
 
 const STEPS = [
     { path: "/dashboard", label: "Home", icon: LayoutGrid },
@@ -19,12 +20,6 @@ const STEPS = [
     { path: "/replies", label: "Step 4: Create Replies", icon: MessageSquare },
     { path: "/training", label: "Training", icon: GraduationCap },
     { path: "/scale-training", label: "Scale to $1k–$5k/day", icon: TrendingUp },
-];
-
-const UPGRADES = [
-    { path: "/dfy", label: "Done-For-You", icon: Scan },
-    { path: "/instant", label: "Instant Income", icon: Sparkles },
-    { path: "/autopilot", label: "Automated Profits", icon: Rocket },
 ];
 
 const EXCLUSIVE_OFFERS = [
@@ -162,40 +157,53 @@ export function Sidebar({
                             </div>
 
                             <div className="flex flex-col mx-1 mt-3">
-                                <div className="bg-page border border-accent/20 rounded-[14px] p-4 flex flex-col gap-3">
-                                    <div className="flex items-center gap-2 mb-1 px-1">
-                                        <Sparkles className="text-accent" size={16} strokeWidth={2} />
+                                <div className="premium-nav-section p-2">
+                                    <div className="flex items-center gap-2 px-2.5 pt-1.5 pb-2">
+                                        <Sparkles className="text-accent animate-sparkle-pulse" size={14} strokeWidth={2} fill="currentColor" />
                                         <span className="text-[11px] font-bold tracking-[0.15em] text-accent uppercase">Premium Features</span>
                                     </div>
 
-                                    {UPGRADES.map((step) => {
-                                        const isActive = pathname === step.path;
-                                        const Icon = step.icon;
+                                    <div className="flex flex-col gap-1">
+                                        {PREMIUM_FEATURES.map((step, index) => {
+                                            const isActive = pathname === step.path;
+                                            const Icon = step.icon;
 
-                                        return (
-                                            <Link
-                                                key={step.path}
-                                                href={step.path}
-                                                className={clsx(
-                                                    "flex items-center justify-center gap-3 py-3 rounded-full transition-all duration-300 border",
-                                                    isActive
-                                                        ? "bg-accent/10 border-accent/40 text-accent"
-                                                        : "bg-surface border-white/5 text-text-muted hover:border-white/10 hover:text-white"
-                                                )}
-                                            >
-                                                <Icon size={16} strokeWidth={1.5} />
-                                                <span className="text-[13px] font-medium tracking-wide">{step.label}</span>
-                                            </Link>
-                                        );
-                                    })}
+                                            return (
+                                                <motion.div
+                                                    key={step.path}
+                                                    initial={{ opacity: 0, x: -12 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{ delay: 0.15 + index * 0.05 }}
+                                                >
+                                                    <Link
+                                                        href={step.path}
+                                                        className={clsx(
+                                                            "premium-sidebar-item flex items-center gap-3 rounded-xl px-3 py-3 text-[13px] font-medium tracking-wide transition-all duration-300",
+                                                            isActive ? "is-active" : "text-text-secondary"
+                                                        )}
+                                                    >
+                                                        <Icon size={16} strokeWidth={1.5} className={isActive ? "text-accent" : "text-accent/80"} />
+                                                        <span>{step.label}</span>
+                                                        {isActive && (
+                                                            <motion.div
+                                                                layoutId="activePremiumIndicator"
+                                                                className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
+                                                                style={{ boxShadow: "0 0 10px rgba(234, 179, 8, 0.7)" }}
+                                                            />
+                                                        )}
+                                                    </Link>
+                                                </motion.div>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
                         </>
                     )}
 
                     {collapsed && (
-                        <div className="flex flex-col gap-2 mt-2">
-                            {UPGRADES.map((step) => {
+                        <div className="premium-nav-section mt-2 flex flex-col gap-1 p-1">
+                            {PREMIUM_FEATURES.map((step) => {
                                 const isActive = pathname === step.path;
                                 const Icon = step.icon;
                                 return (
@@ -204,8 +212,8 @@ export function Sidebar({
                                         href={step.path}
                                         title={step.label}
                                         className={clsx(
-                                            "flex items-center justify-center py-3 rounded-xl border transition-colors",
-                                            isActive ? "bg-accent/10 border-accent/30 text-accent" : "border-white/5 text-text-muted hover:text-white"
+                                            "premium-sidebar-item flex items-center justify-center rounded-xl py-3 transition-all duration-300",
+                                            isActive ? "is-active text-accent" : "text-accent/70"
                                         )}
                                     >
                                         <Icon size={18} />

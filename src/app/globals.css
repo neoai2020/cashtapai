@@ -217,6 +217,149 @@ html[data-sidebar="collapsed"] {
   }
 }
 
+/* Premium nav — highlighted section + animated glow (gold accent) */
+@keyframes premium-section-glow {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 0 0 1px rgba(234, 179, 8, 0.28),
+      0 0 18px rgba(234, 179, 8, 0.1);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 1px rgba(234, 179, 8, 0.6),
+      0 0 36px rgba(234, 179, 8, 0.25);
+  }
+}
+
+@keyframes premium-sweep {
+  0%,
+  55% {
+    transform: translateX(-160%) skewX(-14deg);
+  }
+  100% {
+    transform: translateX(320%) skewX(-14deg);
+  }
+}
+
+@keyframes premium-sparkle-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(0.88);
+  }
+}
+
+.animate-sparkle-pulse {
+  animation: premium-sparkle-pulse 2s ease-in-out infinite;
+}
+
+.premium-nav-section {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  background: linear-gradient(165deg, rgba(234, 179, 8, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%);
+  animation: premium-section-glow 3.5s ease-in-out infinite;
+}
+
+/* Light sweep passing across the premium section */
+.premium-nav-section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 45%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(234, 179, 8, 0.08) 45%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(234, 179, 8, 0.08) 55%,
+    transparent 100%
+  );
+  animation: premium-sweep 4.5s cubic-bezier(0.32, 0.72, 0, 1) infinite;
+  pointer-events: none;
+}
+
+.premium-sidebar-item {
+  position: relative;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.premium-sidebar-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, #eab308, #6366f1);
+  transition: height 0.3s ease;
+}
+
+.premium-sidebar-item:hover::before,
+.premium-sidebar-item.is-active::before {
+  height: 65%;
+}
+
+.premium-sidebar-item:hover {
+  background: rgba(234, 179, 8, 0.08);
+  border-color: rgba(234, 179, 8, 0.2);
+  color: #f8fafc;
+}
+
+.premium-sidebar-item.is-active {
+  background: rgba(234, 179, 8, 0.14);
+  border-color: rgba(234, 179, 8, 0.45);
+  color: #fff;
+  box-shadow:
+    0 0 22px rgba(234, 179, 8, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Premium upgrade cards (dashboard widget) — separated, lifted rows */
+.premium-upgrade-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(234, 179, 8, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition:
+    transform 0.3s cubic-bezier(0.32, 0.72, 0, 1),
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.premium-upgrade-card:hover {
+  background: rgba(234, 179, 8, 0.1);
+  border-color: rgba(234, 179, 8, 0.5);
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 28px rgba(234, 179, 8, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.premium-upgrade-card.is-active {
+  background: rgba(234, 179, 8, 0.14);
+  border-color: rgba(234, 179, 8, 0.55);
+  box-shadow:
+    0 0 24px rgba(234, 179, 8, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Search, TrendingUp, ArrowRight, Brain, Radar, MessageSquare } from "lucide-react";
 import { ContactSupportWidget } from "@/components/dashboard/ContactSupportWidget";
 import { DashboardTipsWidget } from "@/components/dashboard/DashboardTipsWidget";
+import { PremiumUpgradesWidget } from "@/components/dashboard/PremiumUpgradesWidget";
 import { motion } from "framer-motion";
 import { PageHeader } from "@/components/ui/page-header";
 import { VideoThumbnail } from "@/components/ui/video-thumbnail";
@@ -129,6 +130,7 @@ export default function DashboardPage() {
                 <aside className="flex flex-col gap-4">
                     <ContactSupportWidget />
                     <DashboardTipsWidget />
+                    <PremiumUpgradesWidget />
                 </aside>
             </div>
 
