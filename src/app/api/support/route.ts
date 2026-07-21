@@ -20,8 +20,8 @@ async function sendViaResend(email: string, message: string, userId: string): Pr
       to: [SUPPORT_EMAIL],
       reply_to: email,
       subject: `${APP_SUPPORT_NAME} support request from ${email}`,
-      text: `${message}\n\n---\nReply to: ${email}\nUser ID: ${userId}`,
-      html: `<p>${escapeHtml(message)}</p><p><strong>Reply to:</strong> ${escapeHtml(email)}</p>`,
+      text: `Customer email: ${email}\nSoftware: ${APP_SUPPORT_NAME}\n\nCustomer inquiry is:\n${message}\n\n---\nUser ID: ${userId}`,
+      html: `<p><strong>Customer email:</strong> ${escapeHtml(email)}<br><strong>Software:</strong> ${APP_SUPPORT_NAME}</p><p><strong>Customer inquiry is:</strong></p><p>${escapeHtml(message)}</p><p><em>User ID: ${userId}</em></p>`,
     }),
   })
   return res.ok
@@ -37,7 +37,7 @@ async function sendViaFreshdesk(email: string, message: string, userId: string):
     body: JSON.stringify({
       email,
       subject: `${APP_SUPPORT_NAME} — Dashboard Support Request`,
-      description: `<p>${escapeHtml(message)}</p><p><em>User ID: ${userId}</em></p>`,
+      description: `<p><strong>Customer email:</strong> ${escapeHtml(email)}<br><strong>Software:</strong> ${APP_SUPPORT_NAME}</p><p><strong>Customer inquiry is:</strong></p><p>${escapeHtml(message)}</p><p><em>User ID: ${userId}</em></p>`,
       priority: 2,
       status: 2,
     }),
