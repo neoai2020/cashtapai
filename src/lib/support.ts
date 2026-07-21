@@ -1,0 +1,3 @@
+export const SUPPORT_EMAIL = 'cashtapai@neoai.freshdesk.com'
+export const FREE_TRAINING_URL = 'https://www.breakoutai.net/5k-passive-9'
+export const APP_SUPPORT_NAME = 'CashTap AI'
