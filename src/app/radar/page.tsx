@@ -210,7 +210,7 @@ export default function RadarPage() {
             </div>
 
             {/* Ads grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div id="generation-results" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 scroll-mt-24">
                 <AnimatePresence mode="popLayout">
                     {loadingChip === activeChip ? (
                         Array.from({ length: 6 }).map((_, i) => (

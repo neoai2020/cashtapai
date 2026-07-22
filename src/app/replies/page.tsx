@@ -40,10 +40,12 @@ export default function RepliesPage() {
     const [copiedId, setCopiedId] = useState<string | null>(null);
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
     const [showOfferBanner, setShowOfferBanner] = useState(false);
+    const [scrollTargetId, setScrollTargetId] = useState<string | undefined>();
 
     const handleGenerate = async (post: Ad) => {
         setShowOfferBanner(true);
         setLoadingReplyId(post.id);
+        setScrollTargetId(`generation-results-${post.id}`);
         setExpandedIds(prev => new Set(prev).add(post.id));
 
         try {
@@ -127,6 +129,7 @@ export default function RepliesPage() {
                     showBanner={showOfferBanner}
                     label="Creating replies..."
                     offer="earnings"
+                    scrollTargetId={scrollTargetId}
                 />
             )}
 
@@ -249,11 +252,12 @@ export default function RepliesPage() {
                             <AnimatePresence>
                                 {isExpanded && (
                                     <motion.div
+                                        id={`generation-results-${post.id}`}
                                         initial={{ height: 0, opacity: 0 }}
                                         animate={{ height: "auto", opacity: 1 }}
                                         exit={{ height: 0, opacity: 0 }}
                                         transition={{ duration: 0.25 }}
-                                        className="overflow-hidden border-t border-border-dim/15"
+                                        className="overflow-hidden border-t border-border-dim/15 scroll-mt-24"
                                     >
                                         <div className="p-4">
                                             {isLoading ? (

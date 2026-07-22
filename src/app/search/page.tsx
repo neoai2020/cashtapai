@@ -79,6 +79,7 @@ export default function SearchPage() {
                     showBanner={showOfferBanner}
                     label="Finding ads..."
                     offer="earnings"
+                    scrollOnComplete={false}
                 />
             )}
 

@@ -1,15 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { EarningsBanner } from "./earnings-banner";
 import { WelcomeOfferBanner } from "./welcome-offer-banner";
+
+export const GENERATION_RESULTS_ID = "generation-results";
+
+export function scrollToGenerationResults(targetId = GENERATION_RESULTS_ID, attempt = 0) {
+    const el = document.getElementById(targetId);
+    if (!el) {
+        if (attempt < 10) {
+            window.setTimeout(() => scrollToGenerationResults(targetId, attempt + 1), 120);
+        }
+        return;
+    }
+
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
 interface GenerationProgressProps {
     label: string;
     active: boolean;
     offer?: "earnings" | "welcome";
     showBanner?: boolean;
+    scrollOnComplete?: boolean;
+    scrollTargetId?: string;
 }
 
 export function GenerationProgress({
@@ -17,8 +33,11 @@ export function GenerationProgress({
     active,
     offer = "earnings",
     showBanner = true,
+    scrollOnComplete = true,
+    scrollTargetId,
 }: GenerationProgressProps) {
     const [progress, setProgress] = useState(0);
+    const wasActive = useRef(false);
 
     useEffect(() => {
         if (!active) {
@@ -38,19 +57,26 @@ export function GenerationProgress({
         return () => window.clearInterval(interval);
     }, [active]);
 
+    useEffect(() => {
+        if (wasActive.current && !active && scrollOnComplete) {
+            scrollToGenerationResults(scrollTargetId ?? GENERATION_RESULTS_ID);
+        }
+        wasActive.current = active;
+    }, [active, scrollOnComplete, scrollTargetId]);
+
     if (!active && !showBanner) return null;
 
     const Banner = offer === "welcome" ? WelcomeOfferBanner : EarningsBanner;
 
     return (
-        <div className="flex flex-col gap-4 w-full">
+        <div className="flex flex-col gap-3 w-full">
             {active && (
-                <div className="rounded-2xl border border-border-dim/40 bg-surface/60 p-4 sm:p-5">
-                    <div className="flex items-center gap-3 mb-3">
-                        <Loader2 size={18} className="animate-spin text-accent shrink-0" />
-                        <span className="text-sm font-semibold text-text-primary">{label}</span>
+                <div className="rounded-2xl border border-border-dim/40 bg-surface/60 p-3 sm:p-4">
+                    <div className="flex items-center gap-3 mb-2.5">
+                        <Loader2 size={16} className="animate-spin text-accent shrink-0" />
+                        <span className="text-[13px] sm:text-sm font-semibold text-text-primary">{label}</span>
                     </div>
-                    <div className="h-2 rounded-full bg-page overflow-hidden border border-border-dim/30">
+                    <div className="h-1.5 rounded-full bg-page overflow-hidden border border-border-dim/30">
                         <div
                             className="h-full rounded-full bg-gradient-to-r from-accent to-accent-muted transition-all duration-300 ease-out"
                             style={{ width: `${progress}%` }}
@@ -58,7 +84,7 @@ export function GenerationProgress({
                     </div>
                 </div>
             )}
-            {showBanner && <Banner />}
+            {showBanner && <Banner compact={active} />}
         </div>
     );
 }

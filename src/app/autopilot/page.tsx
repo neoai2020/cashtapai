@@ -360,7 +360,7 @@ export default function AutomatedProfitsPage() {
                 </div>
 
                 {/* Traffic Sources Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div id="generation-results" className="grid grid-cols-1 md:grid-cols-2 gap-5 scroll-mt-24">
                     {!loadingNiche && filteredSources.map((source, idx) => {
                         const isExpanded = expandedId === source.id;
                         const isDone = completed.has(source.id);

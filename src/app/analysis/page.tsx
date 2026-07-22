@@ -294,7 +294,7 @@ export default function AnalysisPage() {
             </AnimatePresence>
 
             {/* Data Table */}
-            <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div id="generation-results" className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 scroll-mt-24">
             <div className="min-w-[640px] border border-border-dim/30 rounded-xl overflow-hidden bg-[#0a0a0c]">
                 {/* Table Header */}
                 <div className="grid grid-cols-12 gap-4 px-5 py-3 bg-[#0c0c0e] border-b border-border-dim/20">

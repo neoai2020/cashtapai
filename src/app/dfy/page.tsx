@@ -380,10 +380,11 @@ export default function DfyPage() {
                 {step === 3 && (
                     <motion.div
                         key="step3"
+                        id="generation-results"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="flex flex-col gap-6"
+                        className="flex flex-col gap-6 scroll-mt-24"
                     >
                         {/* Recap bar */}
                         <div className="glass-card p-4 flex flex-wrap items-center justify-between gap-3">

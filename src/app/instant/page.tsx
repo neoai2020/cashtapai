@@ -174,9 +174,6 @@ export default function InstantIncomePage() {
     const handleShowPosts = () => {
         runDelayedAction("Preparing your Facebook posts...", () => {
             setShowPosts(true);
-            setTimeout(() => {
-                document.getElementById("posts-section")?.scrollIntoView({ behavior: "smooth" });
-            }, 100);
         }, 4000, 4500);
     };
 
@@ -460,11 +457,11 @@ export default function InstantIncomePage() {
             <AnimatePresence>
                 {showPosts && (
                     <motion.section
-                        id="posts-section"
+                        id="generation-results"
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
-                        className="mt-10 flex flex-col gap-5"
+                        className="mt-10 flex flex-col gap-5 scroll-mt-24"
                     >
                         <div className="flex items-center justify-between">
                             <h2 className="text-xl font-bold text-text-primary">
