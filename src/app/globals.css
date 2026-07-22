@@ -372,3 +372,12 @@ html[data-sidebar="collapsed"] {
 ::-webkit-scrollbar-thumb {
   @apply bg-border-dim rounded-full hover:bg-text-muted;
 }
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
