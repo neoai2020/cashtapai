@@ -31,6 +31,13 @@ const EXCLUSIVE_OFFERS = [
     { title: "Fast Cash Training", url: "https://www.breakoutai.net/5k-passive-9" },
 ];
 
+const MORE_ROW =
+    "flex items-center gap-2.5 min-h-[44px] py-2 px-2.5 rounded-xl transition-colors [@media(max-height:740px)]:min-h-[40px] [@media(max-height:740px)]:py-1.5";
+const MORE_SECTION_LABEL =
+    "text-[10px] font-black tracking-[0.18em] text-text-muted uppercase px-1.5 mb-0.5 [@media(max-height:740px)]:text-[9px]";
+const MORE_ITEM_TEXT =
+    "text-[13px] font-medium flex-1 min-w-0 leading-snug [@media(max-height:740px)]:text-[12px]";
+
 export function BottomNav() {
     const pathname = usePathname();
     const { resetSession } = useSearch();
@@ -104,24 +111,33 @@ export function BottomNav() {
                         className="absolute inset-0 bg-black/60"
                         onClick={() => setMoreOpen(false)}
                     />
-                    <div className="absolute bottom-0 inset-x-0 max-h-[85dvh] rounded-t-2xl bg-[#0c0c0e] border-t border-border-dim overflow-hidden flex flex-col">
-                        <div className="flex items-center justify-center py-3">
-                            <div className="w-10 h-1 rounded-full bg-white/20" />
-                        </div>
-                        <div className="flex items-center justify-between px-5 pb-3">
-                            <h2 className="text-base font-bold text-white">More</h2>
-                            <button
-                                type="button"
-                                onClick={() => setMoreOpen(false)}
-                                className="w-10 h-10 rounded-full flex items-center justify-center text-text-muted hover:text-white hover:bg-white/5"
-                            >
-                                <X size={18} />
-                            </button>
+                    <div
+                        className="absolute bottom-0 inset-x-0 mx-auto flex w-full max-w-lg flex-col overflow-hidden rounded-t-2xl border-t border-border-dim bg-[#0c0c0e] shadow-[0_-12px_40px_rgba(0,0,0,0.45)] max-h-[min(90dvh,calc(100dvh-env(safe-area-inset-top)-0.75rem))] supports-[height:100dvh]:max-h-[min(90dvh,calc(100dvh-env(safe-area-inset-top)-0.75rem))]"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="More menu"
+                    >
+                        <div className="relative shrink-0 px-4 pb-2 pt-2.5 [@media(max-height:740px)]:pb-1.5 [@media(max-height:740px)]:pt-2">
+                            <div className="flex justify-center pb-2 [@media(max-height:740px)]:pb-1.5">
+                                <div className="h-1 w-9 rounded-full bg-white/20" />
+                            </div>
+                            <div className="flex items-center justify-between gap-3">
+                                <h2 className="text-[15px] font-bold text-white [@media(max-height:740px)]:text-sm">More</h2>
+                                <button
+                                    type="button"
+                                    onClick={() => setMoreOpen(false)}
+                                    aria-label="Close menu"
+                                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-text-muted hover:bg-white/5 hover:text-white [@media(max-height:740px)]:h-8 [@media(max-height:740px)]:w-8"
+                                >
+                                    <X size={17} />
+                                </button>
+                            </div>
                         </div>
 
-                        <div className="overflow-y-auto px-4 pb-[max(1rem,env(safe-area-inset-bottom))] flex flex-col gap-6">
-                            <div className="flex flex-col gap-1">
-                                <span className="text-[10px] font-black tracking-[0.2em] text-text-muted uppercase px-2 mb-1">
+                        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 pb-[max(0.875rem,env(safe-area-inset-bottom))] touch-pan-y [@media(max-height:740px)]:px-2.5">
+                            <div className="flex flex-col gap-4 [@media(max-height:740px)]:gap-3">
+                            <div className="flex flex-col gap-0.5">
+                                <span className={MORE_SECTION_LABEL}>
                                     Navigation
                                 </span>
                                 {MORE_NAV.map((item) => {
@@ -133,21 +149,21 @@ export function BottomNav() {
                                             href={item.path}
                                             onClick={() => setMoreOpen(false)}
                                             className={clsx(
-                                                "flex items-center gap-3 min-h-[52px] px-3 rounded-xl transition-colors",
+                                                MORE_ROW,
                                                 active ? "bg-accent/10 text-accent" : "text-text-secondary hover:bg-white/5"
                                             )}
                                         >
-                                            <Icon size={18} />
-                                            <span className="text-sm font-medium flex-1">{item.label}</span>
-                                            <ChevronRight size={14} className="opacity-40" />
+                                            <Icon size={16} className="shrink-0" />
+                                            <span className={MORE_ITEM_TEXT}>{item.label}</span>
+                                            <ChevronRight size={13} className="shrink-0 opacity-40" />
                                         </Link>
                                     );
                                 })}
                             </div>
 
-                            <div className="premium-nav-section flex flex-col gap-1 p-2">
-                                <span className="flex items-center gap-1.5 text-[10px] font-black tracking-[0.2em] text-accent uppercase px-2 pt-1 pb-1.5">
-                                    <Sparkles size={12} className="animate-sparkle-pulse" fill="currentColor" />
+                            <div className="premium-nav-section flex flex-col gap-0.5 p-1.5 [@media(max-height:740px)]:p-1">
+                                <span className="flex items-center gap-1.5 px-1.5 pb-1 pt-0.5 text-[10px] font-black uppercase tracking-[0.18em] text-accent [@media(max-height:740px)]:text-[9px]">
+                                    <Sparkles size={11} className="animate-sparkle-pulse shrink-0" fill="currentColor" />
                                     Premium Features
                                 </span>
                                 {PREMIUM_FEATURES.map((item) => {
@@ -159,19 +175,20 @@ export function BottomNav() {
                                             href={item.path}
                                             onClick={() => setMoreOpen(false)}
                                             className={clsx(
-                                                "premium-sidebar-item flex items-center gap-3 min-h-[52px] px-3 rounded-xl transition-all duration-300",
+                                                "premium-sidebar-item",
+                                                MORE_ROW,
                                                 active ? "is-active" : "text-text-secondary"
                                             )}
                                         >
-                                            <Icon size={18} className={active ? "text-accent" : "text-accent/80"} />
-                                            <span className="text-sm font-medium flex-1">{item.label}</span>
+                                            <Icon size={16} className={clsx("shrink-0", active ? "text-accent" : "text-accent/80")} />
+                                            <span className={MORE_ITEM_TEXT}>{item.label}</span>
                                         </Link>
                                     );
                                 })}
                             </div>
 
-                            <div className="flex flex-col gap-2">
-                                <span className="text-[10px] font-black tracking-[0.2em] text-text-muted uppercase px-2">
+                            <div className="flex flex-col gap-1.5">
+                                <span className={MORE_SECTION_LABEL}>
                                     Exclusive Offers
                                 </span>
                                 {EXCLUSIVE_OFFERS.map((promo) => (
@@ -180,24 +197,24 @@ export function BottomNav() {
                                         href={promo.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center justify-between gap-3 min-h-[52px] px-3 py-2 rounded-xl bg-[#0A0A0B] border border-accent/25 hover:border-accent/50 transition-colors"
+                                        className="flex min-h-[44px] items-center justify-between gap-2.5 rounded-xl border border-accent/25 bg-[#0A0A0B] px-2.5 py-2 transition-colors hover:border-accent/50 [@media(max-height:740px)]:min-h-[40px] [@media(max-height:740px)]:py-1.5"
                                     >
-                                        <div className="flex flex-col gap-0.5 min-w-0">
-                                            <span className="text-[13px] font-semibold text-accent leading-tight">{promo.title}</span>
-                                            <span className="text-[10px] text-text-muted font-medium">Claim Now</span>
+                                        <div className="flex min-w-0 flex-col gap-0.5">
+                                            <span className="text-[12px] font-semibold leading-tight text-accent [@media(max-height:740px)]:text-[11px]">{promo.title}</span>
+                                            <span className="text-[9px] font-medium text-text-muted">Claim Now</span>
                                         </div>
-                                        <ExternalLink size={14} className="text-accent shrink-0" />
+                                        <ExternalLink size={13} className="shrink-0 text-accent" />
                                     </a>
                                 ))}
                             </div>
 
-                            <div className="flex flex-col gap-1 border-t border-white/5 pt-4">
+                            <div className="flex flex-col gap-0.5 border-t border-white/5 pt-3 [@media(max-height:740px)]:pt-2">
                                 <a
                                     href="mailto:cashtapai@neoai.freshdesk.com"
-                                    className="flex items-center gap-3 min-h-[52px] px-3 rounded-xl text-text-secondary hover:bg-white/5"
+                                    className={clsx(MORE_ROW, "text-text-secondary hover:bg-white/5")}
                                 >
-                                    <Headphones size={18} />
-                                    <span className="text-sm font-medium">Contact Support</span>
+                                    <Headphones size={16} className="shrink-0" />
+                                    <span className={MORE_ITEM_TEXT}>Contact Support</span>
                                 </a>
                                 <button
                                     type="button"
@@ -205,11 +222,12 @@ export function BottomNav() {
                                         resetSession();
                                         setMoreOpen(false);
                                     }}
-                                    className="flex items-center gap-3 min-h-[52px] px-3 rounded-xl text-red-400/80 hover:bg-red-500/5"
+                                    className={clsx(MORE_ROW, "text-red-400/80 hover:bg-red-500/5")}
                                 >
-                                    <LogOut size={18} />
-                                    <span className="text-sm font-medium">Logout</span>
+                                    <LogOut size={16} className="shrink-0" />
+                                    <span className={MORE_ITEM_TEXT}>Logout</span>
                                 </button>
+                            </div>
                             </div>
                         </div>
                     </div>
