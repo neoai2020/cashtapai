@@ -79,7 +79,7 @@ export function OnboardingFlow() {
     );
 
     return (
-        <div className="fixed inset-0 z-[300] flex min-h-screen bg-gradient-to-br from-slate-50 via-white to-amber-50">
+        <div className="fixed inset-0 z-[300] flex h-dvh overflow-hidden bg-gradient-to-br from-slate-50 via-white to-amber-50">
             <aside className="hidden w-72 shrink-0 flex-col border-r border-slate-200 bg-white p-8 lg:flex">
                 <div className="flex items-center gap-3">
                     {logo}
@@ -106,7 +106,7 @@ export function OnboardingFlow() {
                 </ul>
             </aside>
 
-            <main className="flex flex-1 flex-col overflow-y-auto">
+            <main className="flex flex-1 min-h-0 flex-col overflow-y-auto">
                 <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-6 py-12 sm:px-10">
                     <div className="mb-8 flex items-center gap-3 lg:hidden">
                         {logo}

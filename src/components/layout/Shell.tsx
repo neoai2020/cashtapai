@@ -22,18 +22,22 @@ export function Shell({ children }: { children: React.ReactNode }) {
         localStorage.setItem("cashtap_sidebar_collapsed", sidebarCollapsed ? "1" : "0");
     }, [sidebarCollapsed]);
 
+    useEffect(() => {
+        document.body.style.overflow = "";
+    }, [pathname]);
+
     if (isAuthPage) {
         return <>{children}</>;
     }
 
     return (
-        <div className="flex min-h-dvh overflow-hidden bg-page w-full max-w-[100vw]">
+        <div className="flex h-dvh overflow-hidden bg-page w-full max-w-[100vw]">
             <Sidebar
                 collapsed={sidebarCollapsed}
                 onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
             />
 
-            <main className="flex-1 min-w-0 w-full overflow-x-hidden overflow-y-auto scroll-smooth relative lg:pl-[var(--sidebar-w)] transition-[padding] duration-300">
+            <main className="flex-1 min-w-0 min-h-0 w-full overflow-x-hidden overflow-y-auto scroll-smooth relative lg:pl-[var(--sidebar-w)] transition-[padding] duration-300">
                 <div className="lg:hidden sticky top-0 z-30 flex items-center justify-center px-4 h-14 pt-[env(safe-area-inset-top)] bg-page/95 backdrop-blur border-b border-border-dim">
                     <div className="flex items-center gap-2 min-w-0">
                         <div className="w-7 h-7 bg-gradient-to-br from-accent to-accent-muted flex items-center justify-center rounded-md shrink-0">
