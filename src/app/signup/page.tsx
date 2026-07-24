@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Mail, Lock, UserPlus, ShieldAlert, User, Eye, EyeOff, Target } from "lucide-react";
 import { ONBOARDING_META_KEY } from "@/config/onboarding-content";
+import { FloatingSupportButton } from "@/components/support/FloatingSupportButton";
 
 export default function SignupPage() {
     const [showPassword, setShowPassword] = useState(false);
@@ -63,6 +64,7 @@ export default function SignupPage() {
 
     return (
         <div className="min-h-dvh bg-[#050505] flex items-center justify-center p-6 relative overflow-x-hidden">
+            <FloatingSupportButton />
             {/* Background Accents */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#D4AF37]/5 rounded-full blur-[120px]" />
